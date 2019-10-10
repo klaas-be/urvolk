@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.07.00">
+    <object class="AudioFile" id="{6688b795-62ca-4d31-a551-8e3e063dca06}">
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>0.8612698412698413</value>
+        </property>
+        <property name="audioFilePath">
+            <value>$(AUDIO_BIN_DIR)/SebHugadaga-2 {a97f8014-29c0-4de1-b8c1-37b8f886a47b}.aiff</value>
+        </property>
+        <relationship name="container">
+            <destination>{62c253e0-b68d-4cd7-99cc-345df3a16122}</destination>
+        </relationship>
+    </object>
+</objects>

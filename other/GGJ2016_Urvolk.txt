@@ -1,0 +1,26 @@
+Urvolk
+
+("Urvolk", German for "anncient civilisation")
+
+This is a prototype for a stone age based strategy game.
+
+At the beginning we have a villager, we then perform one of four rituals to either get another villager, 
+conjure rain, increase wood chopping rate or sacrifice one of our villagers to increase our settlers faith.
+
+These rituals cost a specific amount of our four resources. (food, wood, faith and people) 
+The cost of the population increasing ritual will double upon each activation.
+
+We can deploy our villagers in three different buildings (seclect villager via left mouse button, and choose building with right click). 
+If deployed there they will generate food, wood or faith.
+
+
+
+Due to the fact that this is a prototype, as of now we do not have a real goal or win or loose condition. 
+
+Please note that there might be a problem with running the game in fullscreen mode (MouseOffset).
+
+
+However this jam was a wonderful opportunity to craft this prototype, and we will continue to work on it as a pet project.
+
+This Game uses FMOD. - www.fmod.org
+“FMOD Studio, copyright © Firelight Technologies Pty, Ltd., 2012-2015.”

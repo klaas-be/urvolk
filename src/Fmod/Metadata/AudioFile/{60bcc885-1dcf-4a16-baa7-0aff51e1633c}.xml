@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.07.00">
+    <object class="AudioFile" id="{60bcc885-1dcf-4a16-baa7-0aff51e1633c}">
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>2.4531746031746033</value>
+        </property>
+        <property name="audioFilePath">
+            <value>$(AUDIO_BIN_DIR)/chicken {009302c9-231a-4876-87eb-0c3652e9987b}.aiff</value>
+        </property>
+        <relationship name="container">
+            <destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+        </relationship>
+    </object>
+</objects>

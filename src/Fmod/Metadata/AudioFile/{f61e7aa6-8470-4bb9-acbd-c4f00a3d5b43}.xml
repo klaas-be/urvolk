@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.07.00">
+    <object class="AudioFile" id="{f61e7aa6-8470-4bb9-acbd-c4f00a3d5b43}">
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>0.29560090702947844</value>
+        </property>
+        <property name="audioFilePath">
+            <value>$(AUDIO_BIN_DIR)/Alex Huh-4 {b8ec0e97-3d3b-426a-b787-5befa462085a}.aiff</value>
+        </property>
+        <relationship name="container">
+            <destination>{9fb448cb-90e1-4f86-8c33-b77e8f4265c8}</destination>
+        </relationship>
+    </object>
+</objects>

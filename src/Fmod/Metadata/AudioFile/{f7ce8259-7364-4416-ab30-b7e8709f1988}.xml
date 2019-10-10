@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.07.00">
+    <object class="AudioFile" id="{f7ce8259-7364-4416-ab30-b7e8709f1988}">
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>0.91170068027210882</value>
+        </property>
+        <property name="audioFilePath">
+            <value>$(AUDIO_BIN_DIR)/SebTod {10adfe6f-f099-431f-b031-8a92d9d16d38}.aiff</value>
+        </property>
+        <relationship name="container">
+            <destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+        </relationship>
+    </object>
+</objects>

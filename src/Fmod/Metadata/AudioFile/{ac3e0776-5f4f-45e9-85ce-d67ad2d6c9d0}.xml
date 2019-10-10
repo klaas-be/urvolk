@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.07.00">
+    <object class="AudioFile" id="{ac3e0776-5f4f-45e9-85ce-d67ad2d6c9d0}">
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>1</value>
+        </property>
+        <property name="length">
+            <value>0.54054421768707483</value>
+        </property>
+        <property name="audioFilePath">
+            <value>$(AUDIO_BIN_DIR)/KlaasHugadaga {4ad93ff0-d810-4893-9007-e4c69456025c}.aiff</value>
+        </property>
+        <relationship name="container">
+            <destination>{5eb31112-1835-45af-965a-7ef6eca1622c}</destination>
+        </relationship>
+    </object>
+</objects>
