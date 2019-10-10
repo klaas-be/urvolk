@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.01.07.00">
-    <object class="AudioFile" id="{33fe213a-f957-47b6-82f7-083930d99402}">
-        <property name="frequencyInKHz">
-            <value>44.0999985</value>
-        </property>
-        <property name="channelCount">
-            <value>1</value>
-        </property>
-        <property name="length">
-            <value>1.2647165532879818</value>
-        </property>
-        <property name="audioFilePath">
-            <value>$(AUDIO_BIN_DIR)/TempleSelect {888c807e-542b-452f-becd-7e3c915902b1}.wav</value>
-        </property>
-        <relationship name="container">
-            <destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
-        </relationship>
-    </object>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{33fe213a-f957-47b6-82f7-083930d99402}">
+		<property name="assetPath">
+			<value>TempleSelect.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>1.2647165532879818</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+		</relationship>
+	</object>
 </objects>

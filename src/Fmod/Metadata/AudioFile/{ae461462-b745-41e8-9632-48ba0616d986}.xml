@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.01.07.00">
-    <object class="AudioFile" id="{ae461462-b745-41e8-9632-48ba0616d986}">
-        <property name="frequencyInKHz">
-            <value>44.0999985</value>
-        </property>
-        <property name="channelCount">
-            <value>1</value>
-        </property>
-        <property name="length">
-            <value>0.26496598639455782</value>
-        </property>
-        <property name="audioFilePath">
-            <value>$(AUDIO_BIN_DIR)/TodAlex3 {eaa04dec-0cfd-4223-81a7-54f64874eef8}.aiff</value>
-        </property>
-        <relationship name="container">
-            <destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
-        </relationship>
-    </object>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{ae461462-b745-41e8-9632-48ba0616d986}">
+		<property name="assetPath">
+			<value>TodAlex3.aiff</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.26496598639455782</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+		</relationship>
+	</object>
 </objects>

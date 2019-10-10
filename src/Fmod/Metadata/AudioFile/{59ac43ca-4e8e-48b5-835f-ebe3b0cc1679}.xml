@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.01.07.00">
-    <object class="AudioFile" id="{59ac43ca-4e8e-48b5-835f-ebe3b0cc1679}">
-        <property name="frequencyInKHz">
-            <value>44.0999985</value>
-        </property>
-        <property name="channelCount">
-            <value>1</value>
-        </property>
-        <property name="length">
-            <value>0.21952380952380951</value>
-        </property>
-        <property name="audioFilePath">
-            <value>$(AUDIO_BIN_DIR)/AlexButon {0428195c-85f4-4fe0-8968-42bea75aefa8}.aiff</value>
-        </property>
-        <relationship name="container">
-            <destination>{9fb448cb-90e1-4f86-8c33-b77e8f4265c8}</destination>
-        </relationship>
-    </object>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{59ac43ca-4e8e-48b5-835f-ebe3b0cc1679}">
+		<property name="assetPath">
+			<value>Alex/AlexButon.aiff</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.21952380952380951</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+		</relationship>
+	</object>
 </objects>

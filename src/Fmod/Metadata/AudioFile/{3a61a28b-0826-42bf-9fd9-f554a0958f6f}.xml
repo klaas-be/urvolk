@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.01.07.00">
-    <object class="AudioFile" id="{3a61a28b-0826-42bf-9fd9-f554a0958f6f}">
-        <property name="frequencyInKHz">
-            <value>44.0999985</value>
-        </property>
-        <property name="channelCount">
-            <value>1</value>
-        </property>
-        <property name="length">
-            <value>4.3932879818594106</value>
-        </property>
-        <property name="audioFilePath">
-            <value>$(AUDIO_BIN_DIR)/FeuerRauschen {a367c606-8f4b-436d-9724-0a44159c32f2}.wav</value>
-        </property>
-        <relationship name="container">
-            <destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
-        </relationship>
-    </object>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{3a61a28b-0826-42bf-9fd9-f554a0958f6f}">
+		<property name="assetPath">
+			<value>FeuerRauschen.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>4.3932879818594106</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+		</relationship>
+	</object>
 </objects>

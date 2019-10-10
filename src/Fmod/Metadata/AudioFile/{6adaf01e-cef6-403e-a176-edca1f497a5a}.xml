@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.01.07.00">
-    <object class="AudioFile" id="{6adaf01e-cef6-403e-a176-edca1f497a5a}">
-        <property name="frequencyInKHz">
-            <value>44.0999985</value>
-        </property>
-        <property name="channelCount">
-            <value>1</value>
-        </property>
-        <property name="length">
-            <value>0.8450793650793651</value>
-        </property>
-        <property name="audioFilePath">
-            <value>$(AUDIO_BIN_DIR)/KlaasHugadaga-2 {b6393994-72a4-48d0-bd7e-e68d0e828486}.aiff</value>
-        </property>
-        <relationship name="container">
-            <destination>{5eb31112-1835-45af-965a-7ef6eca1622c}</destination>
-        </relationship>
-    </object>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{6adaf01e-cef6-403e-a176-edca1f497a5a}">
+		<property name="assetPath">
+			<value>Klaas/KlaasHugadaga-2.aiff</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.8450793650793651</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+		</relationship>
+	</object>
 </objects>

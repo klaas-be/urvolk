@@ -1,5 +1,8 @@
 using System;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace FMODUnity
 {
@@ -8,24 +11,24 @@ namespace FMODUnity
         public Guid Guid;
         public string Path;
         public EventNotFoundException(string path)
-            : base("FMOD Studio event not found '" + path + "'")
-        {           
+            : base("[FMOD] Event not found '" + path + "'")
+        {
             Path = path;
         }
 
         public EventNotFoundException(Guid guid)
-            : base("FMOD Studio event not found " + guid.ToString("b") + "")
+            : base("[FMOD] Event not found " + guid.ToString("b") + "")
         {
             Guid = guid;
         }
     }
-        
+
     public class BusNotFoundException : Exception
     {
         public string Path;
         public BusNotFoundException(string path)
-            : base("FMOD Studio bus not found '" + path + "'")
-        {           
+            : base("[FMOD] Bus not found '" + path + "'")
+        {
             Path = path;
         }
     }
@@ -34,7 +37,7 @@ namespace FMODUnity
     {
         public string Path;
         public VCANotFoundException(string path)
-            : base("FMOD Studio VCA not found '" + path + "'")
+            : base("[FMOD] VCA not found '" + path + "'")
         {
             Path = path;
         }
@@ -46,13 +49,13 @@ namespace FMODUnity
         public FMOD.RESULT Result;
 
         public BankLoadException(string path, FMOD.RESULT result)
-            : base(String.Format("FMOD Studio could not load bank '{0}' : {1} : {2}", path, result.ToString(), FMOD.Error.String(result)))
+            : base(string.Format("[FMOD] Could not load bank '{0}' : {1} : {2}", path, result.ToString(), FMOD.Error.String(result)))
         {
             Path = path;
             Result = result;
         }
         public BankLoadException(string path, string error)
-            : base(String.Format("FMOD Studio could not load bank '{0}' : ", path, error))
+            : base(string.Format("[FMOD] Could not load bank '{0}' : {1}", path, error))
         {
             Path = path;
             Result = FMOD.RESULT.ERR_INTERNAL;
@@ -65,41 +68,61 @@ namespace FMODUnity
         public string Location;
 
         public SystemNotInitializedException(FMOD.RESULT result, string location)
-            : base(String.Format("FMOD Studio initialization failed : {2} : {0} : {1}", result.ToString(), FMOD.Error.String(result), location))
+            : base(string.Format("[FMOD] Initialization failed : {2} : {0} : {1}", result.ToString(), FMOD.Error.String(result), location))
         {
             Result = result;
             Location = location;
         }
 
         public SystemNotInitializedException(Exception inner)
-            : base("FMOD Studio initialization failed", inner)
+            : base("[FMOD] Initialization failed", inner)
         {
         }
     }
 
-    public enum EmitterGameEvent
+    public enum EmitterGameEvent : int
     {
         None,
-        LevelStart,
-        LevelEnd,
+        ObjectStart,
+        ObjectDestroy,
         TriggerEnter,
         TriggerExit,
+        TriggerEnter2D,
+        TriggerExit2D,
         CollisionEnter,
         CollisionExit,
+        CollisionEnter2D,
+        CollisionExit2D,
+        ObjectEnable,
+        ObjectDisable,
+        MouseEnter,
+        MouseExit,
+        MouseDown,
+        MouseUp,
     }
 
-    public enum LoaderGameEvent
+    public enum LoaderGameEvent : int
     {
         None,
-        LevelStart,
-        LevelEnd,
+        ObjectStart,
+        ObjectDestroy,
         TriggerEnter,
         TriggerExit,
+        TriggerEnter2D,
+        TriggerExit2D,
     }
-    
+
     public static class RuntimeUtils
     {
-        public const string LogFileName = "fmod.log";
+        public static string GetCommonPlatformPath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return path;
+            }
+
+            return path.Replace('\\', '/');
+        }
 
         public static FMOD.VECTOR ToFMODVector(this Vector3 vec)
         {
@@ -131,6 +154,18 @@ namespace FMODUnity
             return attributes;
         }
 
+        public static FMOD.ATTRIBUTES_3D To3DAttributes(Transform transform, Rigidbody rigidbody = null)
+        {
+            FMOD.ATTRIBUTES_3D attributes = transform.To3DAttributes();
+
+            if (rigidbody)
+            {
+                attributes.velocity = rigidbody.velocity.ToFMODVector();
+            }
+
+            return attributes;
+        }
+
         public static FMOD.ATTRIBUTES_3D To3DAttributes(GameObject go, Rigidbody rigidbody = null)
         {
             FMOD.ATTRIBUTES_3D attributes = go.transform.To3DAttributes();
@@ -138,6 +173,38 @@ namespace FMODUnity
             if (rigidbody)
             {
                 attributes.velocity = rigidbody.velocity.ToFMODVector();
+            }
+
+            return attributes;
+        }
+
+        public static FMOD.ATTRIBUTES_3D To3DAttributes(Transform transform, Rigidbody2D rigidbody)
+        {
+            FMOD.ATTRIBUTES_3D attributes = transform.To3DAttributes();
+
+            if (rigidbody)
+            {
+                FMOD.VECTOR vel;
+                vel.x = rigidbody.velocity.x;
+                vel.y = rigidbody.velocity.y;
+                vel.z = 0;
+                attributes.velocity = vel;
+            }
+
+            return attributes;
+        }
+
+        public static FMOD.ATTRIBUTES_3D To3DAttributes(GameObject go, Rigidbody2D rigidbody)
+        {
+            FMOD.ATTRIBUTES_3D attributes = go.transform.To3DAttributes();
+
+            if (rigidbody)
+            {
+                FMOD.VECTOR vel;
+                vel.x = rigidbody.velocity.x;
+                vel.y = rigidbody.velocity.y;
+                vel.z = 0;
+                attributes.velocity = vel;
             }
 
             return attributes;
@@ -154,24 +221,26 @@ namespace FMODUnity
             return FMODPlatform.Mac;
             #elif UNITY_STANDALONE_LINUX
             return FMODPlatform.Linux;
+            #elif UNITY_TVOS
+            return FMODPlatform.AppleTV;
             #elif UNITY_IOS
             FMODPlatform result;
             switch (UnityEngine.iOS.Device.generation)
             {
-			case UnityEngine.iOS.DeviceGeneration.iPhone5:
-			case UnityEngine.iOS.DeviceGeneration.iPhone5C:
-			case UnityEngine.iOS.DeviceGeneration.iPhone5S:
-			case UnityEngine.iOS.DeviceGeneration.iPadAir1:
-			case UnityEngine.iOS.DeviceGeneration.iPadMini2Gen:
-			case UnityEngine.iOS.DeviceGeneration.iPhone6:
-			case UnityEngine.iOS.DeviceGeneration.iPhone6Plus:
-			case UnityEngine.iOS.DeviceGeneration.iPadMini3Gen:
-			case UnityEngine.iOS.DeviceGeneration.iPadAir2:
-                result = FMODPlatform.MobileHigh;
-				break;
+                case UnityEngine.iOS.DeviceGeneration.iPad1Gen:
+                case UnityEngine.iOS.DeviceGeneration.iPad2Gen:
+                case UnityEngine.iOS.DeviceGeneration.iPad3Gen:
+                case UnityEngine.iOS.DeviceGeneration.iPadMini1Gen:
+                case UnityEngine.iOS.DeviceGeneration.iPhone:
+                case UnityEngine.iOS.DeviceGeneration.iPhone3G:
+                case UnityEngine.iOS.DeviceGeneration.iPhone3GS:
+                case UnityEngine.iOS.DeviceGeneration.iPhone4:
+                case UnityEngine.iOS.DeviceGeneration.iPhone4S:
+                    result = FMODPlatform.MobileLow;
+                break;
             default:
-                result = FMODPlatform.MobileLow;
-				break;
+                result = FMODPlatform.MobileHigh;
+                break;
             }
 
             UnityEngine.Debug.Log(String.Format("FMOD Studio: Device {0} classed as {1}", SystemInfo.deviceModel, result.ToString()));
@@ -188,11 +257,11 @@ namespace FMODUnity
             }
             else
             {
-                // check the clock rate on quad core systems            
+                // check the clock rate on quad core systems
                 string freqinfo = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq";
-                using(global::System.IO.TextReader reader = new global::System.IO.StreamReader(freqinfo))
+                try
                 {
-                    try
+                    using (global::System.IO.TextReader reader = new global::System.IO.StreamReader(freqinfo))
                     {
                         string line = reader.ReadLine();
                         int khz = Int32.Parse(line) / 1000;
@@ -205,15 +274,14 @@ namespace FMODUnity
                             result = FMODPlatform.MobileLow;
                         }
                     }
-                    catch
-                    {
-                        // Assume worst case
-                        result = FMODPlatform.MobileLow;
-                    }
+                }
+                catch
+                {
+                    result = FMODPlatform.MobileLow;
                 }
             }
             
-            UnityEngine.Debug.Log(String.Format("FMOD Studio: Device {0} classed as {1}", SystemInfo.deviceModel, result.ToString()));
+            UnityEngine.Debug.Log(String.Format("[FMOD] Device {0} classed as {1}", SystemInfo.deviceModel, result.ToString()));
             return result;
             #elif UNITY_WINRT_8_1
             FMODPlatform result;
@@ -226,30 +294,34 @@ namespace FMODUnity
                 result = FMODPlatform.MobileHigh;
             }
 
-            UnityEngine.Debug.Log(String.Format("FMOD Studio: Device {0} classed as {1}", SystemInfo.deviceModel, result.ToString()));
+            UnityEngine.Debug.Log(String.Format("[FMOD] Device {0} classed as {1}", SystemInfo.deviceModel, result.ToString()));
             return result;
 
             #elif UNITY_PS4
             return FMODPlatform.PS4;
             #elif UNITY_XBOXONE
             return FMODPlatform.XboxOne;
-            #elif UNITY_PSP2
-            return FMODPlatform.PSVita;
-            #elif UNITY_WIIU
-            return FMODPlatform.WiiU;
+            #elif UNITY_WSA_10_0
+            return FMODPlatform.UWP;
+            #elif UNITY_SWITCH
+            return FMODPlatform.Switch;
+            #elif UNITY_WEBGL
+            return FMODPlatform.WebGL;
+            #elif UNITY_STADIA
+            return FMODPlatform.Stadia;
             #endif
         }
 
         const string BankExtension = ".bank";
         internal static string GetBankPath(string bankName)
-        {           
+        {
             #if UNITY_EDITOR
             // For play in editor use original asset location because streaming asset folder will contain platform specific banks
             string bankFolder = Settings.Instance.SourceBankPath;
-			if (Settings.Instance.HasPlatforms)
-			{
-				bankFolder = global::System.IO.Path.Combine(bankFolder, Settings.Instance.GetBankPlatform(FMODPlatform.PlayInEditor));
-			} 
+            if (Settings.Instance.HasPlatforms)
+            {
+                bankFolder = global::System.IO.Path.Combine(bankFolder, Settings.Instance.GetBankPlatform(FMODPlatform.PlayInEditor));
+            } 
             #elif UNITY_ANDROID
             string bankFolder = null;
             if (System.IO.Path.GetExtension(Application.dataPath) == ".apk")
@@ -260,77 +332,126 @@ namespace FMODUnity
             {
                 bankFolder = String.Format("jar:file://{0}!/assets", Application.dataPath);
             }
-            #elif UNITY_WINRT_8_1
+            #elif UNITY_WINRT_8_1 || UNITY_WSA_10_0
             string bankFolder = "ms-appx:///Data/StreamingAssets";
             #else
             string bankFolder = Application.streamingAssetsPath;
             #endif
 
+            // Special case for Switch, remove / at start if needed.
+            #if UNITY_SWITCH
+            if (bankFolder[0] == '/')
+                bankFolder = bankFolder.Substring(1);
+            #endif
+
             if (System.IO.Path.GetExtension(bankName) != BankExtension)
             {
-                return String.Format("{0}/{1}.bank", bankFolder, bankName);
+                return string.Format("{0}/{1}.bank", bankFolder, bankName);
             }
             else
             {
-                return String.Format("{0}/{1}", bankFolder, bankName);
-            }            
+                return string.Format("{0}/{1}", bankFolder, bankName);
+            }
         }
 
         internal static string GetPluginPath(string pluginName)
         {
-            #if UNITY_IOS
-				return "";
-			#else
-	            #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_XBOXONE || UNITY_WINRT_8_1
-	                string pluginFileName = pluginName + ".dll";
-	            #elif UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
-					string pluginFileName = pluginName + ".bundle";
-	            #elif UNITY_PS4
-	                string pluginFileName = pluginName + ".prx";
-	            #elif UNITY_ANDROID || UNITY_STANDALONE_LINUX
-	                string pluginFileName = "lib" + pluginName + ".so";
-	            #endif
+            #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_XBOXONE || UNITY_WINRT_8_1 || UNITY_WSA_10_0
+                string pluginFileName = pluginName + ".dll";
+            #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+                string pluginFileName = pluginName + ".bundle";
+            #elif UNITY_PS4
+                string pluginFileName = pluginName + ".prx";
+            #elif UNITY_ANDROID || UNITY_STANDALONE_LINUX
+                string pluginFileName = "lib" + pluginName + ".so";
+            #elif UNITY_WEBGL
+                string pluginFileName = pluginName + ".bc";
+            #endif
 
-	            #if UNITY_EDITOR_WIN && UNITY_EDITOR_64
-	                string pluginFolder = Application.dataPath + "/Plugins/X86_64/";
-	            #elif UNITY_EDITOR_WIN
-	                string pluginFolder = Application.dataPath + "/Plugins/X86/";
-	            #elif UNITY_STANDALONE_WIN || UNITY_PS4 || UNITY_XBOXONE || UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX || UNITY_STANDALONE_LINUX
-	                string pluginFolder = Application.dataPath + "/Plugins/";
-	            #elif UNITY_WINRT_8_1
-	                string pluginFolder = "";
-	            #elif UNITY_ANDROID            
-					var dirInfo = new global::System.IO.DirectoryInfo(Application.persistentDataPath);
-					string packageName = dirInfo.Parent.Name;
-	                string pluginFolder = "/data/data/" + packageName + "/lib/";
-	            #else
-	                string pluginFolder = "";
-	            #endif
+            string fmodLibPath = "/Plugins/FMOD/lib";
+            #if UNITY_EDITOR_WIN && UNITY_EDITOR_64
+                string pluginFolder = Application.dataPath + fmodLibPath + "/win/X86_64/";
+            #elif UNITY_EDITOR_WIN
+                string pluginFolder = Application.dataPath + fmodLibPath + "/win/X86/";
+            #elif UNITY_EDITOR_OSX
+                string pluginFolder = Application.dataPath + fmodLibPath + "/mac/";
+            #elif UNITY_STANDALONE_WIN || UNITY_PS4 || UNITY_XBOXONE || UNITY_STANDALONE_OSX || UNITY_WEBGL
+                string pluginFolder = Application.dataPath + "/Plugins/";
+            #elif UNITY_STANDALONE_LINUX
+                string pluginFolder = Application.dataPath + fmodLibPath + ((IntPtr.Size == 8) ? "/linux/x86_64/" : "/linux/x86/");
+            #elif UNITY_WSA || UNITY_ANDROID
+                string pluginFolder = "";
+            #else
+                string pluginFileName = "";
+                string pluginFolder = "";
+            #endif
 
-	            return pluginFolder + pluginFileName;
-			#endif
+            return pluginFolder + pluginFileName;
         }
 
         public static void EnforceLibraryOrder()
         {
             #if UNITY_ANDROID && !UNITY_EDITOR
 
-			AndroidJavaClass jSystem = new AndroidJavaClass("java.lang.System");
-			jSystem.CallStatic("loadLibrary", FMOD.VERSION.dll);
-			jSystem.CallStatic("loadLibrary", FMOD.Studio.STUDIO_VERSION.dll);
-            
-            #endif
+            AndroidJavaClass jSystem = new AndroidJavaClass("java.lang.System");
+            jSystem.CallStatic("loadLibrary", FMOD.VERSION.dll);
+            jSystem.CallStatic("loadLibrary", FMOD.Studio.STUDIO_VERSION.dll);
 
-			#if !UNITY_IPHONE || UNITY_EDITOR // iOS is statically linked
+            #endif
 
             // Call a function in fmod.dll to make sure it's loaded before fmodstudio.dll
             int temp1, temp2;
             FMOD.Memory.GetStats(out temp1, out temp2);
 
             Guid temp3;
-            FMOD.Studio.Util.ParseID("", out temp3);           
-
-            #endif
+            FMOD.Studio.Util.parseID("", out temp3);
         }
+
+        #if UNITY_EDITOR
+        public static FMODPlatform GetEditorFMODPlatform()
+        {
+            switch (EditorUserBuildSettings.activeBuildTarget)
+            {
+                case BuildTarget.Android:
+                    return FMODPlatform.Android;
+                case BuildTarget.iOS:
+                    return FMODPlatform.iOS;
+                case BuildTarget.PS4:
+                    return FMODPlatform.PS4;
+                #if !UNITY_2019_2_OR_NEWER
+                case BuildTarget.StandaloneLinux:
+                case BuildTarget.StandaloneLinuxUniversal:
+                #else
+                case BuildTarget.StandaloneLinux64:
+                #endif
+                    return FMODPlatform.Linux;
+                case BuildTarget.StandaloneOSX:
+                    return FMODPlatform.Mac;
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                    return FMODPlatform.Windows;
+                case BuildTarget.XboxOne:
+                    return FMODPlatform.XboxOne;
+                case BuildTarget.WSAPlayer:
+                    return FMODPlatform.UWP;
+                case BuildTarget.tvOS:
+                    return FMODPlatform.AppleTV;
+                #if UNITY_SWITCH
+                case BuildTarget.Switch:
+                    return FMODPlatform.Switch;
+                #endif
+                #if UNITY_WEBGL
+                case BuildTarget.WebGL:
+                    return FMODPlatform.WebGL;
+                #endif
+                #if UNITY_STADIA
+                case BuildTarget.Stadia:
+                    return FMODPlatform.Stadia;
+                #endif
+                default:
+                    return FMODPlatform.None;
+            }
+        }
+        #endif
     }
 }

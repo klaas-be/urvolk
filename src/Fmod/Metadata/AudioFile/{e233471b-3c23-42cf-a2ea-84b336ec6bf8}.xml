@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.01.07.00">
-    <object class="AudioFile" id="{e233471b-3c23-42cf-a2ea-84b336ec6bf8}">
-        <property name="frequencyInKHz">
-            <value>44.0999985</value>
-        </property>
-        <property name="channelCount">
-            <value>2</value>
-        </property>
-        <property name="length">
-            <value>32.376190476190473</value>
-        </property>
-        <property name="audioFilePath">
-            <value>$(AUDIO_BIN_DIR)/AlexSebWind {0eb64a43-de16-442f-b5f2-5ddc00cd6d8b}.wav</value>
-        </property>
-        <relationship name="container">
-            <destination>{62c253e0-b68d-4cd7-99cc-345df3a16122}</destination>
-        </relationship>
-    </object>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{e233471b-3c23-42cf-a2ea-84b336ec6bf8}">
+		<property name="assetPath">
+			<value>seb/AlexSebWind.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>32.376190476190473</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+		</relationship>
+	</object>
 </objects>

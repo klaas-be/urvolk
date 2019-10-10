@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="ParameterPresetFolder" id="{9654c284-6c15-4af8-b116-743f254b825c}">
+		<property name="name">
+			<value>RitualSoundLoop</value>
+		</property>
+		<relationship name="folder">
+			<destination>{da9ccdc1-409c-4174-a297-9bd2c581dad6}</destination>
+		</relationship>
+	</object>
+</objects>

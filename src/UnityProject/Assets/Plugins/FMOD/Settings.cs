@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
-
+using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace FMODUnity
 {
-
-
     [Serializable]
     public enum FMODPlatform
     {
@@ -26,34 +24,44 @@ namespace FMODUnity
         Linux,
         iOS,
         Android,
-        WindowsPhone,
+        Deprecated_1,
         XboxOne,
         PS4,
-        WiiU,
-        PSVita,
+        Deprecated_2,
+        Deprecated_3,
+        AppleTV,
+        UWP,
+        Switch,
+        WebGL,
+        Stadia,
         Count,
     }
 
     [Serializable]
-    public enum SpeakerMode
+    public enum ImportType
     {
-        //AutoDetect,
-        Stereo,
-        //Quad,
-        _51,
-        _71,
+        StreamingAssets,
+        AssetBundle,
+    }
+
+    [Serializable]
+    public enum BankLoadType
+    {
+        All,
+        Specified,
+        None
     }
 
     public class PlatformSettingBase
     {
         public FMODPlatform Platform;
     }
-    
+
     public class PlatformSetting<T> : PlatformSettingBase
     {
         public T Value;
     }
-    
+
     [Serializable]
     public class PlatformIntSetting : PlatformSetting<int>
     {
@@ -64,16 +72,26 @@ namespace FMODUnity
     {
     }
 
+    public enum TriStateBool
+    {
+        Disabled,
+        Enabled,
+        Development,
+    }
+
     [Serializable]
-    public class PlatformBoolSetting : PlatformSetting<bool>
+    public class PlatformBoolSetting : PlatformSetting<TriStateBool>
     {
     }
-    
+
     #if UNITY_EDITOR
     [InitializeOnLoad]
     #endif
     public class Settings : ScriptableObject
     {
+        [SerializeField]
+        bool SwitchSettingsMigration = false;
+
         const string SettingsAssetName = "FMODStudioSettings";
 
         private static Settings instance = null;
@@ -87,16 +105,16 @@ namespace FMODUnity
                     instance = Resources.Load(SettingsAssetName) as Settings;
                     if (instance == null)
                     {
-                        UnityEngine.Debug.Log("FMOD Studio: cannot find integration settings, creating default settings");
+                        UnityEngine.Debug.Log("[FMOD] Cannot find integration settings, creating default settings");
                         instance = CreateInstance<Settings>();
                         instance.name = "FMOD Studio Integration Settings";
 
                         #if UNITY_EDITOR
-                        if (!System.IO.Directory.Exists("Assets/Resources"))
+                        if (!Directory.Exists("Assets/Plugins/FMOD/Resources"))
                         {
-                            AssetDatabase.CreateFolder("Assets", "Resources");
+                            AssetDatabase.CreateFolder("Assets/Plugins/FMOD", "Resources");
                         }
-                        AssetDatabase.CreateAsset(instance, "Assets/Resources/" + SettingsAssetName + ".asset");
+                        AssetDatabase.CreateAsset(instance, "Assets/Plugins/FMOD/Resources/" + SettingsAssetName + ".asset");
                         #endif
                     }
                 }
@@ -104,35 +122,77 @@ namespace FMODUnity
             }
         }
 
-            
-	    #if UNITY_EDITOR
+        #if UNITY_EDITOR
         [MenuItem("FMOD/Edit Settings", priority = 0)]
         public static void EditSettings()
-	    {
-	        Selection.activeObject = Instance;
+        {
+            Selection.activeObject = Instance;
+            #if UNITY_2018_2_OR_NEWER
+            EditorApplication.ExecuteMenuItem("Window/General/Inspector");
+            #else
             EditorApplication.ExecuteMenuItem("Window/Inspector");
+            #endif
         }
         #endif
-
 
         [SerializeField]
         public bool HasSourceProject = true;
 
         [SerializeField]
         public bool HasPlatforms = true;
-        
-        [SerializeField]
-        public string SourceProjectPath;
 
         [SerializeField]
-        public string SourceBankPath;
-        
+        private string sourceProjectPath;
+
+        public string SourceProjectPath
+        {
+            get
+            {
+                return sourceProjectPath;
+            }
+            set
+            {
+                sourceProjectPath = value;
+            }
+        }
+
+        [SerializeField]
+        private string sourceBankPath;
+        public string SourceBankPath
+        {
+            get
+            {
+                return sourceBankPath;
+            }
+            set
+            {
+            	sourceBankPath = value;
+            }
+        }
+
+        [SerializeField]
+        public string SourceBankPathUnformatted; // Kept as to not break existing projects
+
         [SerializeField]
         public bool AutomaticEventLoading;
 
         [SerializeField]
+        public BankLoadType BankLoadType;
+
+        [SerializeField]
         public bool AutomaticSampleLoading;
 
+        [SerializeField]
+        public string EncryptionKey;
+
+        [SerializeField]
+        public ImportType ImportType;
+
+        [SerializeField]
+        public string TargetAssetPath;
+
+        [SerializeField]
+        public FMOD.DEBUG_FLAGS LoggingLevel = FMOD.DEBUG_FLAGS.WARNING;
 
         [SerializeField]
         public List<PlatformIntSetting> SpeakerModeSettings;
@@ -162,10 +222,16 @@ namespace FMODUnity
         public List<string> Plugins = new List<string>();
 
         [SerializeField]
-        public string MasterBank;
+        public List<string> MasterBanks;
 
         [SerializeField]
         public List<string> Banks;
+
+        [SerializeField]
+        public List<string> BanksToLoad;
+
+        [SerializeField]
+        public ushort LiveUpdatePort = 9264;
 
         public static FMODPlatform GetParent(FMODPlatform platform)
         {
@@ -174,24 +240,24 @@ namespace FMODUnity
                 case FMODPlatform.Windows:
                 case FMODPlatform.Linux:
                 case FMODPlatform.Mac:
+                case FMODPlatform.UWP:
                     return FMODPlatform.Desktop;
                 case FMODPlatform.MobileHigh:
                 case FMODPlatform.MobileLow:
                 case FMODPlatform.iOS:
                 case FMODPlatform.Android:
-                case FMODPlatform.WindowsPhone:
-                case FMODPlatform.PSVita:
+                case FMODPlatform.AppleTV:
                     return FMODPlatform.Mobile;
+                case FMODPlatform.Switch:
                 case FMODPlatform.XboxOne:
                 case FMODPlatform.PS4:
-                case FMODPlatform.WiiU:
+                case FMODPlatform.Stadia:
                     return FMODPlatform.Console;
                 case FMODPlatform.Desktop:
                 case FMODPlatform.Console:
                 case FMODPlatform.Mobile:
                     return FMODPlatform.Default;
                 case FMODPlatform.PlayInEditor:
-                    return FMODPlatform.Default;
                 case FMODPlatform.Default:
                 default:
                     return FMODPlatform.None;
@@ -241,19 +307,21 @@ namespace FMODUnity
         // --------   Live Update ----------------------
         public bool IsLiveUpdateEnabled(FMODPlatform platform)
         {
-            return GetSetting(LiveUpdateSettings, platform, false);
+            #if DEVELOPMENT_BUILD || UNITY_EDITOR
+            return GetSetting(LiveUpdateSettings, platform, TriStateBool.Disabled) != TriStateBool.Disabled;
+            #else
+            return GetSetting(LiveUpdateSettings, platform, TriStateBool.Disabled) == TriStateBool.Enabled;
+            #endif
         }
 
         // --------   Overlay Update ----------------------
         public bool IsOverlayEnabled(FMODPlatform platform)
         {
-            return GetSetting(OverlaySettings, platform, false);
-        }
-
-        // --------   Logging ----------------------
-        public bool IsLoggingEnabled(FMODPlatform platform)
-        {
-            return GetSetting(LoggingSettings, platform, false);
+            #if DEVELOPMENT_BUILD || UNITY_EDITOR
+            return GetSetting(OverlaySettings, platform, TriStateBool.Disabled) != TriStateBool.Disabled;
+            #else
+            return GetSetting(OverlaySettings, platform, TriStateBool.Disabled) == TriStateBool.Enabled;
+            #endif
         }
 
         // --------   Real channels ----------------------
@@ -271,7 +339,16 @@ namespace FMODUnity
         // --------   Speaker Mode ----------------------
         public int GetSpeakerMode(FMODPlatform platform)
         {
-            return GetSetting(SpeakerModeSettings, platform, 0);
+            #if UNITY_EDITOR
+            if (platform == FMODPlatform.PlayInEditor)
+            { 
+                return GetSetting(SpeakerModeSettings, platform, GetSetting(SpeakerModeSettings, RuntimeUtils.GetEditorFMODPlatform(), (int)FMOD.SPEAKERMODE.STEREO));
+            }
+            else
+            #endif
+            {
+                return GetSetting(SpeakerModeSettings, platform, (int)FMOD.SPEAKERMODE.STEREO);
+            }
         }
         // --------   Sample Rate ----------------------
         public int GetSampleRate(FMODPlatform platform)
@@ -282,12 +359,27 @@ namespace FMODUnity
         // --------   Bank Platform ----------------------
         public string GetBankPlatform(FMODPlatform platform)
         {
-            return HasPlatforms ? GetSetting(BankDirectorySettings, platform, "Desktop") : "";
+            if (!HasPlatforms)
+            {
+                return "";
+            }
+            #if UNITY_EDITOR
+            if (platform == FMODPlatform.PlayInEditor)
+            {
+                return GetSetting(BankDirectorySettings, platform, GetSetting(BankDirectorySettings, RuntimeUtils.GetEditorFMODPlatform(), "Desktop"));
+            }
+            else
+            #endif
+            { 
+                return GetSetting(BankDirectorySettings, platform, "Desktop");
+            }
         }
- 
+
         private Settings()
         {
+            MasterBanks = new List<string>();
             Banks = new List<string>();
+            BanksToLoad = new List<string>();
             RealChannelSettings = new List<PlatformIntSetting>();
             VirtualChannelSettings = new List<PlatformIntSetting>();
             LoggingSettings = new List<PlatformBoolSetting>();
@@ -298,25 +390,49 @@ namespace FMODUnity
             BankDirectorySettings = new List<PlatformStringSetting>();
             
             // Default play in editor settings
-            SetSetting(LoggingSettings, FMODPlatform.PlayInEditor, true);
-            SetSetting(LiveUpdateSettings, FMODPlatform.PlayInEditor, true);
-            SetSetting(OverlaySettings, FMODPlatform.PlayInEditor, true);
+            SetSetting(LoggingSettings, FMODPlatform.PlayInEditor, TriStateBool.Enabled);
+            SetSetting(LiveUpdateSettings, FMODPlatform.PlayInEditor, TriStateBool.Enabled);
+            SetSetting(OverlaySettings, FMODPlatform.PlayInEditor, TriStateBool.Enabled);
+            SetSetting(SampleRateSettings, FMODPlatform.PlayInEditor, 48000);
             // These are not editable, set them high
             SetSetting(RealChannelSettings, FMODPlatform.PlayInEditor, 256);
             SetSetting(VirtualChannelSettings, FMODPlatform.PlayInEditor, 1024);
 
             // Default runtime settings
-            SetSetting(LoggingSettings, FMODPlatform.Default, false);
-            SetSetting(LiveUpdateSettings, FMODPlatform.Default, false);
-            SetSetting(OverlaySettings, FMODPlatform.Default, false);
+            SetSetting(LoggingSettings, FMODPlatform.Default, TriStateBool.Disabled);
+            SetSetting(LiveUpdateSettings, FMODPlatform.Default, TriStateBool.Disabled);
+            SetSetting(OverlaySettings, FMODPlatform.Default, TriStateBool.Disabled);
 
             SetSetting(RealChannelSettings, FMODPlatform.Default, 32); // Match the default in the low level
             SetSetting(VirtualChannelSettings, FMODPlatform.Default, 128);
             SetSetting(SampleRateSettings, FMODPlatform.Default, 0);
             SetSetting(SpeakerModeSettings, FMODPlatform.Default, (int) FMOD.SPEAKERMODE.STEREO);
 
+            ImportType = ImportType.StreamingAssets;
             AutomaticEventLoading = true;
             AutomaticSampleLoading = false;
+            TargetAssetPath = "";
+
+        }
+
+        private void OnEnable()
+        {
+            if (SwitchSettingsMigration == false)
+            {
+                SetSetting(LoggingSettings, FMODPlatform.Switch, GetSetting(LoggingSettings, FMODPlatform.Mobile, TriStateBool.Disabled));
+                SetSetting(LiveUpdateSettings, FMODPlatform.Switch, GetSetting(LiveUpdateSettings, FMODPlatform.Mobile, TriStateBool.Disabled));
+                SetSetting(OverlaySettings, FMODPlatform.Switch, GetSetting(OverlaySettings, FMODPlatform.Mobile, TriStateBool.Disabled));
+
+                SetSetting(RealChannelSettings, FMODPlatform.Switch, GetSetting(RealChannelSettings, FMODPlatform.Mobile, 32)); // Match the default in the low level
+                SetSetting(VirtualChannelSettings, FMODPlatform.Switch, GetSetting(VirtualChannelSettings, FMODPlatform.Mobile, 128));
+                SetSetting(SampleRateSettings, FMODPlatform.Switch, GetSetting(SampleRateSettings, FMODPlatform.Mobile, 0));
+                SetSetting(SpeakerModeSettings, FMODPlatform.Switch, GetSetting(SpeakerModeSettings, FMODPlatform.Mobile, (int)FMOD.SPEAKERMODE.STEREO));
+                SwitchSettingsMigration = true;
+            }
+
+            // Fix up slashes for old settings meta data.
+            sourceProjectPath = RuntimeUtils.GetCommonPlatformPath(sourceProjectPath);
+            SourceBankPathUnformatted = RuntimeUtils.GetCommonPlatformPath(SourceBankPathUnformatted);
         }
     }
 

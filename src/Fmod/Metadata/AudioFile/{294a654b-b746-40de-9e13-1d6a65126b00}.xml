@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.01.07.00">
-    <object class="AudioFile" id="{294a654b-b746-40de-9e13-1d6a65126b00}">
-        <property name="frequencyInKHz">
-            <value>44.0999985</value>
-        </property>
-        <property name="channelCount">
-            <value>1</value>
-        </property>
-        <property name="length">
-            <value>0.83074829931972793</value>
-        </property>
-        <property name="audioFilePath">
-            <value>$(AUDIO_BIN_DIR)/Alex Gebäude-2 {a4e3dfaa-228e-4914-8d47-498955297fe7}.aiff</value>
-        </property>
-        <relationship name="container">
-            <destination>{9fb448cb-90e1-4f86-8c33-b77e8f4265c8}</destination>
-        </relationship>
-    </object>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{294a654b-b746-40de-9e13-1d6a65126b00}">
+		<property name="assetPath">
+			<value>Alex/Alex Gebäude-2.aiff</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.83074829931972793</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+		</relationship>
+	</object>
 </objects>

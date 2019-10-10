@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.01.07.00">
-    <object class="AudioFile" id="{e9bde10d-9f49-4de6-9d06-40fc9ad5a533}">
-        <property name="frequencyInKHz">
-            <value>44.0999985</value>
-        </property>
-        <property name="channelCount">
-            <value>2</value>
-        </property>
-        <property name="length">
-            <value>8.400997732426303</value>
-        </property>
-        <property name="audioFilePath">
-            <value>$(AUDIO_BIN_DIR)/hugadaga Seb_alex {0146a42c-7bb7-4ca5-bb32-38e423d4e26c}.wav</value>
-        </property>
-        <relationship name="container">
-            <destination>{62c253e0-b68d-4cd7-99cc-345df3a16122}</destination>
-        </relationship>
-    </object>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{e9bde10d-9f49-4de6-9d06-40fc9ad5a533}">
+		<property name="assetPath">
+			<value>seb/hugadaga Seb_alex.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>8.400997732426303</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+		</relationship>
+	</object>
 </objects>

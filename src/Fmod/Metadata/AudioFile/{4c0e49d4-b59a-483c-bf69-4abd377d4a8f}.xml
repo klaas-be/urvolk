@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<objects serializationModel="Studio.01.07.00">
-    <object class="AudioFile" id="{4c0e49d4-b59a-483c-bf69-4abd377d4a8f}">
-        <property name="frequencyInKHz">
-            <value>44.0999985</value>
-        </property>
-        <property name="channelCount">
-            <value>1</value>
-        </property>
-        <property name="length">
-            <value>0.86448979591836739</value>
-        </property>
-        <property name="audioFilePath">
-            <value>$(AUDIO_BIN_DIR)/Alex Hugadaga-4 {cc729301-d600-458d-b1ad-b2137f81c30b}.aiff</value>
-        </property>
-        <relationship name="container">
-            <destination>{9fb448cb-90e1-4f86-8c33-b77e8f4265c8}</destination>
-        </relationship>
-    </object>
+<objects serializationModel="Studio.02.00.00">
+	<object class="AudioFile" id="{4c0e49d4-b59a-483c-bf69-4abd377d4a8f}">
+		<property name="assetPath">
+			<value>Alex/Alex Hugadaga-4.aiff</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.86448979591836739</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9058e4b1-013f-4510-a163-bfb60b849e63}</destination>
+		</relationship>
+	</object>
 </objects>
